@@ -18,6 +18,26 @@
             font-family: 'Open Sans', 'Bitter', serif;
         }
 
+        /* Fix for navbar collapse - Bootstrap 3 compatibility */
+        @media (min-width: 768px) {
+            .navbar-collapse {
+                display: block !important;
+                height: auto !important;
+                padding-bottom: 0;
+                overflow: visible !important;
+            }
+
+            .navbar-collapse:before,
+            .navbar-collapse:after {
+                content: " ";
+                display: table;
+            }
+
+            .navbar-collapse:after {
+                clear: both;
+            }
+        }
+
         /* Let Tyrian theme handle header styling */
         /* Only override content-specific styles */
 
