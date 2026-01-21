@@ -139,6 +139,15 @@ class WikiBuilder:
             else:
                 shutil.copy2(item, dest)
 
+        # Copy CSS files from project root to assets/css/
+        css_dir = self.assets_dest / 'css'
+        css_dir.mkdir(parents=True, exist_ok=True)
+
+        for css_file in ['bootstrap.min.css', 'tyrian.min.css']:
+            src_css = self.project_root / css_file
+            if src_css.exists():
+                shutil.copy2(src_css, css_dir / css_file)
+
         self.log('Assets copied successfully.')
 
     def extract_metadata(self, file_path):
