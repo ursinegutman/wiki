@@ -216,20 +216,18 @@
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <div class="collapse navbar-collapse" id="gw-toolbar">
+                <div class="collapse navbar-collapse navbar-form-container" id="gw-toolbar">
                     <ul class="nav navbar-nav">
                         <li class="selected active"><a href="{{base_url}}/">{{title}}</a></li>
                     </ul>
                     {{#show_search}}
                     <form action="https://www.google.com/search" id="searchform" class="navbar-form navbar-right" role="search">
                         <input type="hidden" name="as_sitesearch" value="{{site_domain}}">
-                        <div class="input-group">
+                        <div class="form-group">
                             <input type="search" name="q" placeholder="Search {{site_name}}" class="form-control"/>
-                            <div class="input-group-btn">
-                                <button type="submit" name="go" value="Go" class="btn btn-default">Go</button>
-                                <button type="submit" name="fulltext" value="Search" class="btn btn-default">Search</button>
-                            </div>
                         </div>
+                        <button type="submit" name="go" value="Go" class="btn btn-default">Go</button>
+                        <button type="submit" name="fulltext" value="Search" class="btn btn-default">Search</button>
                     </form>
                     {{/show_search}}
                 </div>
