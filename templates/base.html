@@ -24,6 +24,11 @@
             margin-bottom: 0;
         }
 
+        .site-title-buttons {
+            float: right;
+            margin: 1rem 0;
+        }
+
         .site-title-buttons .btn {
             margin-right: 0.5rem;
         }
@@ -31,11 +36,13 @@
         .logo {
             text-align: center;
             padding: 1rem 0;
+            clear: both;
         }
 
         .logo img {
-            max-height: 80px;
+            max-height: 60px;
             width: auto;
+            display: inline-block;
         }
 
         .site-label {
@@ -44,6 +51,7 @@
             color: white;
             margin-left: 1rem;
             vertical-align: middle;
+            display: inline-block;
         }
 
         .tyrian-navbar {
@@ -189,37 +197,40 @@
 </head>
 <body>
     <!-- Site Title Section -->
-    <div class="site-title">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="site-title-buttons pull-right">
-                        <div class="btn-group btn-group-sm">
-                            <a href="{{base_url}}/" class="btn btn-primary">Home</a>
+    <header>
+        <div class="site-title">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="site-title-buttons">
                             <div class="btn-group btn-group-sm">
-                                <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">
-                                    <span class="fa fa-map-marker"></span> <span class="hidden-xs">Quick Links</span> <span class="caret"></span>
+                                <a href="{{base_url}}/" role="button" class="btn btn-primary">
+                                    <span class="fa fa-home"></span> <strong>Home</strong>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    <li><a href="{{base_url}}/getting-started.html"><span class="fa fa-book fa-fw"></span> Getting Started</a></li>
-                                    <li><a href="{{base_url}}/installation.html"><span class="fa fa-download fa-fw"></span> Installation</a></li>
-                                    <li><a href="{{base_url}}/configuration.html"><span class="fa fa-cog fa-fw"></span> Configuration</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="{{base_url}}/examples.html"><span class="fa fa-file-text-o fa-fw"></span> Examples</a></li>
-                                </ul>
+                                <div class="btn-group btn-group-sm">
+                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">
+                                        <span class="fa fa-map-marker"></span> <span class="hidden-xs">Quick Links</span> <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li><a href="{{base_url}}/getting-started.html"><span class="fa fa-book fa-fw"></span> Getting Started</a></li>
+                                        <li><a href="{{base_url}}/installation.html"><span class="fa fa-download fa-fw"></span> Installation</a></li>
+                                        <li><a href="{{base_url}}/configuration.html"><span class="fa fa-cog fa-fw"></span> Configuration</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="{{base_url}}/examples.html"><span class="fa fa-file-text-o fa-fw"></span> Examples</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="logo">
-                        <a href="{{base_url}}/" title="Back to homepage">
-                            <img src="{{base_url}}/assets/site-logo.svg" alt="Site Logo">
-                        </a>
-                        <span class="site-label">Wiki</span>
+                        <div class="logo">
+                            <a href="{{base_url}}/" title="Back to homepage" class="site-logo">
+                                <img src="{{base_url}}/assets/site-logo.svg" alt="Site Logo">
+                            </a>
+                            <span class="site-label">Wiki</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Main Navigation -->
     <nav class="tyrian-navbar navbar" role="navigation">
@@ -249,6 +260,7 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Action Navigation -->
     <nav class="navbar navbar-grey navbar-stick" role="navigation">
@@ -296,7 +308,7 @@
                     <div id="bodyContent" class="mw-body-content">
                         <div id="siteSub">From {{site_name}}</div>
 
-                        {{content}}
+                        {{{content}}}
                     </div>
                 </div>
             </div>
