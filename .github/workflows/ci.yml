@@ -35,5 +35,6 @@ jobs:
       - name: Verify output
         run: |
           test -f output/index.html
-          test -f output/assets/tyrian.min.css
-          test -f output/getting-started.html
+          test -f output/assets/css/custom.css
+          test -f output/documentation/index.html
+          test -f output/favicon.ico
