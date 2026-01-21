@@ -2,6 +2,7 @@
 """
 Static Wiki Builder with Tyrian Theme
 Converts markdown files to static HTML using Mustache templates
+Supports nested folder structure with automatic navigation generation
 """
 
 import os
@@ -34,7 +35,8 @@ class WikiBuilder:
         else:
             self.project_root = Path(project_root)
 
-        self.content_dir = self.project_root / 'content' / 'wiki'
+        # Now using content/ as root, not content/wiki
+        self.content_dir = self.project_root / 'content'
         self.template_dir = self.project_root / 'templates'
         self.output_dir = self.project_root / 'output'
         self.assets_source = Path(__file__).parent.parent / 'node_modules' / '@gentoo' / 'tyrian' / 'dist'
@@ -69,6 +71,9 @@ class WikiBuilder:
 
         # Setup Mustache renderer
         self.renderer = Renderer()
+
+        # Navigation structure (built from content folder)
+        self.navigation = None
 
     def log(self, message, level='INFO'):
         """Log a message with level
@@ -113,8 +118,7 @@ class WikiBuilder:
             'language': 'en',
             'author': 'Wiki Admin',
             'year': str(datetime.now().year),
-            'show_search': True,
-            'categories': []
+            'show_search': True
         }
 
     def clean_output(self):
@@ -144,14 +148,17 @@ class WikiBuilder:
             else:
                 shutil.copy2(item, dest)
 
-        # Copy CSS files from project root to assets/css/
-        css_dir = self.assets_dest / 'css'
-        css_dir.mkdir(parents=True, exist_ok=True)
+        # Copy custom CSS
+        custom_css_src = self.project_root / 'assets' / 'css' / 'custom.css'
+        if custom_css_src.exists():
+            css_dir = self.assets_dest / 'css'
+            css_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(custom_css_src, css_dir / 'custom.css')
 
-        for css_file in ['bootstrap.min.css', 'tyrian.min.css']:
-            src_css = self.project_root / css_file
-            if src_css.exists():
-                shutil.copy2(src_css, css_dir / css_file)
+        # Copy favicon if exists
+        favicon_src = self.project_root / 'favicon.ico'
+        if favicon_src.exists():
+            shutil.copy2(favicon_src, self.output_dir / 'favicon.ico')
 
         self.log('Assets copied successfully.')
 
@@ -189,6 +196,158 @@ class WikiBuilder:
 
         return html_content, toc_html
 
+    def build_navigation(self):
+        """Build navigation structure from content folder
+
+        Returns:
+            list: Navigation structure with nested items
+        """
+        self.log('Building navigation from content structure...')
+
+        if not self.content_dir.exists():
+            return []
+
+        nav_items = []
+        base_url = self.config.get('base_url', '')
+
+        # Get all directories in content (these are top-level nav items)
+        for item in sorted(self.content_dir.iterdir()):
+            if not item.is_dir():
+                # If it's README.md at root, it's the Main Page
+                if item.name.lower() == 'readme.md':
+                    nav_items.append({
+                        'title': 'Main page',
+                        'url': f'{base_url}/',
+                        'children': []
+                    })
+                continue
+
+            # Get the README.md in this directory for the title/link
+            readme_file = item / 'README.md'
+            if readme_file.exists():
+                try:
+                    metadata, _ = self.extract_metadata(readme_file)
+                    title = metadata.get('title', item.name.replace('-', ' ').replace('_', ' ').title())
+                except:
+                    title = item.name.replace('-', ' ').replace('_', ' ').title()
+
+                # Build URL path
+                rel_path = item.relative_to(self.content_dir)
+                url = f'{base_url}/{"/".join(rel_path.parts)}/'
+
+                # Build children (subdirectories)
+                children = self._build_nav_children(item, base_url, rel_path)
+
+                nav_items.append({
+                    'title': title,
+                    'url': url,
+                    'children': children
+                })
+
+        self.navigation = nav_items
+
+        # Also build HTML version for template
+        self.navigation_html = self._render_navigation_html(nav_items)
+
+        return nav_items
+
+    def _render_navigation_html(self, nav_items):
+        """Render navigation items to HTML
+
+        Args:
+            nav_items: List of navigation items
+
+        Returns:
+            str: HTML string for navigation
+        """
+        html = ''
+
+        for item in nav_items:
+            if item.get('children'):
+                # Has children - make a dropdown
+                html += f'''<li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">{item['title']} <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{item['url']}">{item['title']}</a></li>
+                        <li class="divider"></li>
+                        {self._render_nested_nav_html(item['children'])}
+                    </ul>
+                </li>'''
+            else:
+                # No children - simple link
+                active_class = ' class="active"' if item.get('is_active') else ''
+                html += f'<li{active_class}><a href="{item["url"]}" title="{item["title"]}">{item["title"]}</a></li>'
+
+        return html
+
+    def _render_nested_nav_html(self, nav_items, depth=0):
+        """Render nested navigation items to HTML
+
+        Args:
+            nav_items: List of navigation items
+            depth: Current depth (for styling)
+
+        Returns:
+            str: HTML string for nested navigation
+        """
+        html = ''
+
+        for item in nav_items:
+            if item.get('children'):
+                # Nested dropdown
+                html += f'''<li class="dropdown{'-submenu' if depth > 0 else ''}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">{item['title']} <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{item['url']}">{item['title']}</a></li>
+                        <li class="divider"></li>
+                        {self._render_nested_nav_html(item['children'], depth + 1)}
+                    </ul>
+                </li>'''
+            else:
+                html += f'<li><a href="{item["url"]}">{item["title"]}</a></li>'
+
+        return html
+
+    def _build_nav_children(self, directory, base_url, parent_path):
+        """Build navigation children for subdirectories
+
+        Args:
+            directory: Path to directory
+            base_url: Base URL from config
+            parent_path: Parent path for URL building
+
+        Returns:
+            list: Child navigation items
+        """
+        children = []
+
+        # Sort directories first, then files
+        items = sorted(directory.iterdir(), key=lambda x: (not x.is_dir(), x.name))
+
+        for item in items:
+            if item.is_dir():
+                # Recursively build subdirectories
+                readme_file = item / 'README.md'
+                if readme_file.exists():
+                    try:
+                        metadata, _ = self.extract_metadata(readme_file)
+                        title = metadata.get('title', item.name.replace('-', ' ').replace('_', ' ').title())
+                    except:
+                        title = item.name.replace('-', ' ').replace('_', ' ').title()
+
+                    rel_path = item.relative_to(self.content_dir)
+                    url = f'{base_url}/{"/".join(rel_path.parts)}/'
+
+                    sub_children = self._build_nav_children(item, base_url, rel_path)
+
+                    children.append({
+                        'title': title,
+                        'url': url,
+                        'children': sub_children
+                    })
+
+        return children
+
     def get_breadcrumb(self, relative_path):
         """Generate breadcrumb from file path
 
@@ -200,12 +359,13 @@ class WikiBuilder:
         """
         parts = Path(relative_path).parts[:-1]  # Exclude filename
         breadcrumb = []
+        base_url = self.config.get('base_url', '')
 
         for i, part in enumerate(parts):
-            url = '/'.join(parts[:i+1]) + '/index.html'
+            url = f'{base_url}/' + '/'.join(parts[:i+1]) + '/'
             breadcrumb.append({
                 'title': part.replace('-', ' ').replace('_', ' ').title(),
-                'url': '/' + url
+                'url': url
             })
 
         return breadcrumb
@@ -252,7 +412,6 @@ class WikiBuilder:
         date = metadata.get('date', datetime.now().strftime('%Y-%m-%d'))
         author = metadata.get('author', self.config.get('author', ''))
         layout = metadata.get('layout', 'wiki')
-        category = metadata.get('category', '')
 
         # Generate breadcrumb
         breadcrumb = self.get_breadcrumb(relative_path)
@@ -292,14 +451,13 @@ class WikiBuilder:
             'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'author': author,
             'date': date,
-            'category': category,
             'content': html_content,
             'current_page': title,
             'breadcrumb': breadcrumb,
             'show_search': self.config.get('show_search', True),
             'site_domain': self.config.get('site_url', '').replace('https://', '').replace('http://', ''),
-            'categories': self.config.get('categories', []),
-            'sidebar_sections': self.config.get('sidebar_sections', [])
+            'navigation_html': getattr(self, 'navigation_html', ''),
+            'navigation': self.navigation if self.navigation else []
         }
 
         # Render template
@@ -325,11 +483,27 @@ class WikiBuilder:
 
         if not md_files:
             self.log('No markdown files found!', 'WARN')
-            return
+            self.log('Creating sample content...', 'INFO')
+            self.create_sample_content()
+            # Re-scan after creating sample content
+            md_files = list(self.content_dir.rglob('*.md'))
+
+        # Build navigation first
+        self.build_navigation()
 
         for md_file in md_files:
             relative_path = md_file.relative_to(self.content_dir)
-            output_file = self.output_dir / relative_path.with_suffix('.html')
+
+            # Determine output path
+            # README.md -> index.html in that directory
+            if md_file.name.lower() == 'readme.md':
+                # README.md becomes index.html in its directory
+                output_rel_path = relative_path.parent / 'index.html'
+            else:
+                # Other files keep their name but become .html
+                output_rel_path = relative_path.with_suffix('.html')
+
+            output_file = self.output_dir / output_rel_path
 
             self.generate_page(md_file, output_file)
 
@@ -339,11 +513,11 @@ class WikiBuilder:
         """Create sample wiki content"""
         self.content_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create sample home page
+        # Create sample README.md at root (Main Page)
         home_content = """---
-title: Welcome to Static Wiki
+title: Main Page
 layout: wiki
-description: A static wiki powered by Tyrian theme
+description: Welcome to the static wiki
 toc: true
 ---
 
@@ -358,7 +532,7 @@ This is a **static wiki** built with the beautiful **Tyrian theme** from Gentoo.
 - 🚀 Fast static site generation
 - 📱 Responsive design
 - 🔍 Search integration
-- 📂 Category support
+- 📂 Nested folder support
 - 🔄 Git-based workflow
 
 ## Getting Started
@@ -366,70 +540,140 @@ This is a **static wiki** built with the beautiful **Tyrian theme** from Gentoo.
 This wiki system allows you to:
 
 1. Write content in Markdown
-2. Organize pages in directories
+2. Organize pages in nested directories
 3. Add metadata with frontmatter
 4. Build static HTML files
 5. Deploy to GitHub Pages or any static hosting
 
-## Sample Content
+## Navigation
 
-Check out these sample pages:
+The navigation is automatically generated from your folder structure:
 
-- [Installation Guide](installation-guide.html)
-- [Configuration](configuration.html)
-- [Contributing](contributing.html)
+- Create folders in `content/` to add navigation items
+- Add `README.md` to a folder to define its title and content
+- Nest folders to create dropdown menus
+- Place `README.md` in the root for the main page
 
-## Code Examples
+## Formatting
 
-You can include code blocks with syntax highlighting:
+This wiki supports Gentoo-style formatting:
 
-```python
-def hello_world():
-    print("Hello, World!")
-    return True
+```cmd root
+emerge --ask app-editors/vim
 ```
 
-```bash
-# Build the wiki
-./scripts/build.sh
+```file /etc/conf.d/hostname
+# Set the hostname of the system
+hostname="mygentoo"
 ```
 
-## Tables
-
-| Feature | Status |
-|---------|--------|
-| Markdown support | ✅ |
-| Tyrian theme | ✅ |
-| Static HTML | ✅ |
-| GitHub Pages | ✅ |
-
-## Alerts
-
-!!! note
-    This is a note alert.
-
-!!! warning
-    This is a warning alert.
-
-!!! tip
-    This is a tip alert.
+```warning
+Important
+Always backup your data before making system changes!
+```
 
 Enjoy your new static wiki!
 """
 
-        with open(self.content_dir / 'index.md', 'w', encoding='utf-8') as f:
+        with open(self.content_dir / 'README.md', 'w', encoding='utf-8') as f:
             f.write(home_content)
 
+        # Create sample Documentation folder
+        docs_dir = self.content_dir / 'documentation'
+        docs_dir.mkdir(exist_ok=True)
+
+        docs_readme = """---
+title: Documentation
+layout: wiki
+description: Documentation index
+toc: true
+---
+
+# Documentation
+
+Welcome to the documentation section.
+
+## Getting Started
+
+- [Installation Guide](installation.html)
+- [Configuration Guide](configuration.html)
+"""
+
+        with open(docs_dir / 'README.md', 'w', encoding='utf-8') as f:
+            f.write(docs_readme)
+
+        # Create sample installation page
+        install_content = """---
+title: Installation Guide
+layout: wiki
+description: How to install and configure the wiki
+toc: true
+---
+
+# Installation Guide
+
+## Prerequisites
+
+- Python 3.7 or higher
+- pip (Python package manager)
+
+## Steps
+
+1. Clone the repository
+2. Install dependencies: `pip install markdown pystache python-frontmatter`
+3. Build: `python scripts/markdown2html.py`
+
+## Next Steps
+
+See the [Configuration Guide](configuration.html) for more details.
+"""
+
+        with open(docs_dir / 'installation.md', 'w', encoding='utf-8') as f:
+            f.write(install_content)
+
+        # Create sample configuration page
+        config_content = """---
+title: Configuration Guide
+layout: wiki
+description: How to configure the wiki
+toc: true
+---
+
+# Configuration Guide
+
+## config.json
+
+Edit `config.json` to customize your wiki:
+
+```json
+{
+  "site_name": "My Wiki",
+  "site_url": "https://example.com",
+  "base_url": "",
+  "site_description": "My documentation site"
+}
+```
+
+## Content Structure
+
+Create folders in `content/` to organize your pages:
+
+```
+content/
+├── README.md           # Main page
+├── documentation/      # Documentation section
+│   ├── README.md
+│   ├── installation.md
+│   └── configuration.md
+└── guides/             # Guides section
+    └── README.md
+```
+"""
+
+        with open(docs_dir / 'configuration.md', 'w', encoding='utf-8') as f:
+            f.write(config_content)
+
         self.log('Sample content created.')
-
-    def generate_indexes(self):
-        """Generate index pages for categories and main wiki index"""
-        self.log('Generating index pages...')
-
-        # Generate main wiki index
-        # TODO: Implement full index generation
-
-        self.log('Index generation complete.')
 
     def build(self):
         """Build the entire static site"""
@@ -439,7 +683,6 @@ Enjoy your new static wiki!
         self.clean_output()
         self.copy_assets()
         self.process_all_files()
-        self.generate_indexes()
 
         self.log(f'Build complete! Output directory: {self.output_dir}')
         self.log('You can now deploy the contents to GitHub Pages or any static hosting service.')

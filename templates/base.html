@@ -66,15 +66,7 @@
                 </div>
                 <div class="collapse navbar-collapse" id="navbar-main-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{base_url}}/" title="Visit the main page">Main page</a></li>
-                        {{#categories}}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">{{name}} <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{base_url}}/category/{{slug}}/">All {{name}}</a></li>
-                            </ul>
-                        </li>
-                        {{/categories}}
+                        {{{navigation_html}}}
                     </ul>
                 </div>
             </div>
