@@ -1,7 +1,7 @@
 {
   "site_name": "My Static Wiki",
-  "site_url": "https://username.github.io/static-wiki",
-  "base_url": "",
+  "site_url": "https://ursinegutman.github.io/wiki",
+  "base_url": "/wiki",
   "site_description": "A static wiki powered by the beautiful Tyrian theme from Gentoo",
   "language": "en",
   "author": "Wiki Admin",
