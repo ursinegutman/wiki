@@ -1,5 +1,7 @@
 # Static Wiki with Tyrian Theme
 
+> **⚠️ WORK IN PROGRESS** - This is an unfinished tool being developed to enable AI assistants (like Claude, GPT, etc.) to generate and manage wikis with nested folder structures. The goal is to create a standard tool for AI-to-wiki workflows.
+
 A lightweight static wiki system powered by the beautiful **Tyrian theme** from Gentoo. Write your content in Markdown, build it into static HTML, and deploy anywhere - including GitHub Pages.
 
 ![Tyrian Theme](https://img.shields.io/badge/theme-Tyrian-purple)
@@ -13,11 +15,13 @@ A lightweight static wiki system powered by the beautiful **Tyrian theme** from 
 - 🚀 **Static Site Generation** - Fast, secure, and easy to deploy
 - 📱 **Responsive Design** - Works perfectly on mobile, tablet, and desktop
 - 🔍 **Search Integration** - Built-in search capabilities
-- 📂 **Category Support** - Organize content into categories
+- 📂 **Nested Folder Support** - Organize content in unlimited nested folders
 - 🔄 **Git-Based Workflow** - Version control for your documentation
 - 🌐 **GitHub Pages Ready** - Deploy with automatic GitHub Actions workflow
 - 🎯 **Zero Runtime Dependencies** - Pure static HTML/CSS/JS
 - ✨ **Gentoo Wiki Formatting** - Command boxes, file boxes, alerts, and more
+- 🧭 **Automatic Navigation** - Nav menus generated from folder structure
+- 📍 **Breadcrumb Trail** - Wiki-style breadcrumb navigation
 
 ## Quick Start
 
@@ -60,14 +64,18 @@ Visit http://localhost:8000
 
 ```
 static-wiki-tyrian/
-├── content/
-│   └── wiki/              # Your markdown content
-│       ├── index.md       # Home page
-│       ├── formatting.md  # Formatting guide
-│       └── *.md           # Other pages
-├── templates/             # HTML templates with Tyrian theme
+├── content/              # YOUR CONTENT GOES HERE
+│   ├── README.md         # Main page (becomes index.html at root)
+│   ├── documentation/    # Section folder
+│   │   ├── README.md     # Section index (becomes index.html in folder)
+│   │   ├── page1.md      # Regular page (becomes page1.html)
+│   │   └── guides/       # Nested sub-section
+│   │       └── README.md # Nested index
+│   └── references/       # Another top-level section
+│       └── README.md
+├── templates/            # HTML templates with Tyrian theme
 │   └── base.html
-├── scripts/               # Build scripts
+├── scripts/              # Build scripts
 │   ├── build.sh          # Bash wrapper script
 │   ├── markdown2html.py  # Python builder
 │   └── gentoo_extension.py # Custom Markdown extensions
@@ -82,11 +90,42 @@ static-wiki-tyrian/
 └── README.md
 ```
 
-## Creating Content
+## Content Structure
 
-### Add a New Page
+The wiki uses a **nested folder structure** to organize content:
 
-Create a markdown file in `content/wiki/`:
+### Key Concepts
+
+1. **`content/`** - Root of all your wiki content
+2. **`README.md`** - Special file that becomes `index.html` in its directory
+3. **Folder names** - Become navigation items automatically
+4. **Unlimited nesting** - Create folders as deep as you want
+
+### How It Works
+
+```
+content/
+├── README.md               → https://yoursite.com/
+├── documentation/          → https://yoursite.com/documentation/
+│   ├── README.md           → https://yoursite.com/documentation/
+│   ├── install.md          → https://yoursite.com/documentation/install.html
+│   └── guides/             → https://yoursite.com/documentation/guides/
+│       └── README.md       → https://yoursite.com/documentation/guides/
+└── references/             → https://yoursite.com/references/
+    └── README.md
+```
+
+### Navigation & Breadcrumbs
+
+- **Top navigation** is auto-generated from folders in `content/`
+- Each folder with a `README.md` becomes a nav item
+- Nested folders become dropdown menus
+- **Breadcrumb trail** shows: `Main page > Documentation > Guides`
+- Each breadcrumb level is clickable to navigate up
+
+### Creating Pages
+
+Create a markdown file in `content/`:
 
 ```markdown
 ---
@@ -101,13 +140,28 @@ toc: true
 Content goes here in **Markdown** format.
 ```
 
-### Frontmatter Options
+### Creating Sections
 
-- `title` - Page title (required)
-- `layout` - Layout to use (default: "wiki")
-- `description` - Page description for SEO
-- `category` - Category for organization
-- `toc` - Show table of contents (true/false)
+1. Create a folder in `content/` (e.g., `content/guides/`)
+2. Add a `README.md` to define the section:
+   ```yaml
+   ---
+   title: Guides
+   layout: wiki
+   description: Collection of guides
+   ---
+   ```
+3. Add other `.md` files for individual pages
+
+### Creating Nested Sections
+
+Just create folders within folders:
+
+```bash
+mkdir -p content/documentation/guides/advanced
+```
+
+Add `README.md` to each folder to define its title.
 
 ## Gentoo Wiki Formatting
 
@@ -169,8 +223,6 @@ All standard Markdown features work:
 - Code blocks: ` ```language `
 - Tables, lists, blockquotes, and more
 
-See [Formatting Guide](/formatting.html) for more examples.
-
 ## Configuration
 
 Edit `config.json` to customize your wiki:
@@ -181,13 +233,7 @@ Edit `config.json` to customize your wiki:
   "site_url": "https://username.github.io/wiki",
   "base_url": "/wiki",
   "site_description": "My documentation site",
-  "show_search": true,
-  "categories": [
-    {
-      "name": "Documentation",
-      "slug": "documentation"
-    }
-  ]
+  "show_search": true
 }
 ```
 
@@ -257,11 +303,21 @@ Edit `templates/base.html` to modify the layout. The template uses Mustache synt
 {{{content}}}     <!-- Page content (unescaped) -->
 {{site_name}}     <!-- Site name from config -->
 {{base_url}}      <!-- Base URL from config -->
+{{navigation_html}} <!-- Auto-generated nav menu -->
+{{breadcrumb}}     <!-- Breadcrumb trail -->
 ```
 
-### Navigation
+## AI Assistant Usage
 
-Edit the navigation section in `templates/base.html` to customize menu items.
+This tool is designed to work well with AI assistants like Claude, ChatGPT, etc. When working with an AI:
+
+1. **Provide context** about your content structure
+2. **Let the AI manage** `content/` folder organization
+3. **Use standard git workflow** for version control
+4. **AI can create/edit markdown files** and rebuild automatically
+
+Example prompt for AI:
+> "Create a new section in the wiki called 'API Reference' with subsections for 'Authentication', 'Endpoints', and 'Examples'. Each subsection should have a README with descriptions and relevant pages."
 
 ## Troubleshooting
 
@@ -274,15 +330,34 @@ pip install --upgrade markdown pystache python-frontmatter
 ### Build Fails
 
 1. Check that markdown files have valid frontmatter
-2. Verify `content/wiki/` directory exists
+2. Verify `content/` directory exists
 3. Ensure `config.json` is valid JSON
 4. Check Python version: `python3 --version` (must be 3.7+)
+
+### Navigation Not Showing
+
+- Ensure folders have `README.md` files
+- Check that `title` is set in frontmatter
+- Rebuild after adding new folders
 
 ### Styles Not Loading
 
 - Verify CDN links in `templates/base.html` are correct
 - Clear browser cache and rebuild
 - Check `base_url` in `config.json` matches your deployment path
+
+## Roadmap
+
+This is a work in progress. Planned features:
+
+- [ ] Better AI integration patterns
+- [ ] Auto-linking between pages
+- [ ] Search indexing
+- [ ] Tags/cross-references
+- [ ] Image galleries
+- [ ] Version history
+- [ ] Multi-language support
+- [ ] Edit-on-GitHub integration
 
 ## Credits
 
