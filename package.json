@@ -26,6 +26,5 @@
   },
   "dependencies": {
     "@gentoo/tyrian": "git+https://anongit.gentoo.org/git/sites/tyrian-theme.git"
-  },
-  "devDependencies": {}
+  }
 }

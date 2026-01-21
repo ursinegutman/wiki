@@ -244,7 +244,8 @@ class WikiBuilder:
         breadcrumb = self.get_breadcrumb(relative_path)
 
         # Add table of contents to content if enabled
-        show_toc = metadata.get('toc', 'true').lower() == 'true'
+        toc_value = metadata.get('toc', 'true')
+        show_toc = (toc_value == 'true' or toc_value is True) if not isinstance(toc_value, bool) else toc_value
         if show_toc and toc_html and layout == 'wiki':
             toc_section = f'''
             <div class="wiki-toc">
