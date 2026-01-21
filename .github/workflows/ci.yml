@@ -36,4 +36,4 @@ jobs:
         run: |
           test -f output/index.html
           test -f output/assets/tyrian.min.css
-          test -d output/wiki
+          test -f output/getting-started.html
