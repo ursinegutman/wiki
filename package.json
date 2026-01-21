@@ -1,0 +1,31 @@
+{
+  "name": "static-wiki-tyrian",
+  "version": "1.0.0",
+  "description": "A static wiki system powered by the beautiful Tyrian theme from Gentoo",
+  "main": "scripts/markdown2html.py",
+  "scripts": {
+    "build": "python3 scripts/markdown2html.py",
+    "build:clean": "python3 scripts/markdown2html.py --clean",
+    "deploy": "./scripts/deploy.sh",
+    "preview": "cd output && python3 -m http.server 8000"
+  },
+  "keywords": [
+    "wiki",
+    "static-site-generator",
+    "markdown",
+    "documentation",
+    "tyrian",
+    "gentoo",
+    "bootstrap"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/static-wiki-tyrian.git"
+  },
+  "dependencies": {
+    "@gentoo/tyrian": "git+https://anongit.gentoo.org/git/sites/tyrian-theme.git"
+  },
+  "devDependencies": {}
+}

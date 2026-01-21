@@ -1,0 +1,4 @@
+markdown>=3.4.1
+pystache>=0.5.4
+python-frontmatter>=1.0.0
+Pygments>=2.14.0

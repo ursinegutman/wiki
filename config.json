@@ -1,0 +1,60 @@
+{
+  "site_name": "My Static Wiki",
+  "site_url": "https://username.github.io/static-wiki",
+  "base_url": "",
+  "site_description": "A static wiki powered by the beautiful Tyrian theme from Gentoo",
+  "language": "en",
+  "author": "Wiki Admin",
+  "year": "2026",
+  "show_search": true,
+  "categories": [
+    {
+      "name": "Documentation",
+      "slug": "documentation"
+    },
+    {
+      "name": "Guides",
+      "slug": "guides"
+    },
+    {
+      "name": "Reference",
+      "slug": "reference"
+    }
+  ],
+  "sidebar_sections": [
+    {
+      "title": "Quick Links",
+      "links": [
+        {
+          "title": "Getting Started",
+          "url": "/wiki/getting-started.html"
+        },
+        {
+          "title": "Installation",
+          "url": "/wiki/installation.html"
+        },
+        {
+          "title": "Configuration",
+          "url": "/wiki/configuration.html"
+        }
+      ]
+    },
+    {
+      "title": "Documentation",
+      "links": [
+        {
+          "title": "User Guide",
+          "url": "/docs/user-guide.html"
+        },
+        {
+          "title": "API Reference",
+          "url": "/docs/api.html"
+        },
+        {
+          "title": "FAQ",
+          "url": "/docs/faq.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{description}}">
+    <title>{{title}} - {{site_name}}</title>
+
+    <!-- Tyrian Theme CSS -->
+    <link rel="stylesheet" href="{{base_url}}/assets/tyrian.min.css">
+    <link rel="stylesheet" href="{{base_url}}/assets/components/searchbars.min.css">
+    <link rel="stylesheet" href="{{base_url}}/assets/components/additional-listgroup-link.min.css">
+
+    <!-- Custom CSS -->
+    <style>
+        .wiki-content {
+            min-height: 60vh;
+        }
+        .wiki-sidebar {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .wiki-sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .wiki-sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .wiki-sidebar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .wiki-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        .wiki-toc {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .wiki-toc h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        .wiki-toc ul {
+            padding-left: 1.5rem;
+        }
+        .wiki-toc li {
+            margin-bottom: 0.5rem;
+        }
+        .wiki-toc a {
+            color: #544d57;
+        }
+        .wiki-toc a:hover {
+            color: #544d57;
+            text-decoration: underline;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+        .wiki-meta {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        .alert {
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="mb-4">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <a href="{{base_url}}/index.html" class="d-flex align-items-center">
+                        <img src="{{base_url}}/assets/site-logo.svg" alt="{{site_name}}" height="60">
+                    </a>
+                </div>
+                <div class="col-md-9">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{base_url}}/index.html">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{base_url}}/wiki/index.html">Wiki</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown">
+                                        Categories
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                        {{#categories}}
+                                        <a class="dropdown-item" href="{{base_url}}/category/{{slug}}/index.html">{{name}}</a>
+                                        {{/categories}}
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <aside class="col-lg-3 mb-4">
+                <div class="card wiki-sidebar">
+                    <div class="card-header">
+                        <h5 class="mb-0">Navigation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <a href="{{base_url}}/index.html" class="list-group-item list-group-item-action">Home</a>
+                            <a href="{{base_url}}/wiki/index.html" class="list-group-item list-group-item-action">All Pages</a>
+                            <a href="{{base_url}}/recent.html" class="list-group-item list-group-item-action">Recent Changes</a>
+                        </div>
+
+                        {{#sidebar_sections}}
+                        <hr>
+                        <h6>{{title}}</h6>
+                        <div class="list-group list-group-flush">
+                            {{#links}}
+                            <a href="{{base_url}}{{url}}" class="list-group-item list-group-item-action">{{title}}</a>
+                            {{/links}}
+                        </div>
+                        {{/sidebar_sections}}
+                    </div>
+                </div>
+
+                {{#show_search}}
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <form action="https://www.google.com/search" method="get" class="search-form">
+                            <input type="hidden" name="as_sitesearch" value="{{site_domain}}">
+                            <div class="input-group">
+                                <input type="text" name="q" class="form-control" placeholder="Search wiki...">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-secondary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {{/show_search}}
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="col-lg-9">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{base_url}}/index.html">Home</a></li>
+                        {{#breadcrumb}}
+                        <li class="breadcrumb-item"><a href="{{base_url}}{{url}}">{{title}}</a></li>
+                        {{/breadcrumb}}
+                        <li class="breadcrumb-item active" aria-current="page">{{current_page}}</li>
+                    </ol>
+                </nav>
+
+                {{content}}
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; {{year}} {{site_name}}. All rights reserved.</p>
+                    <p class="text-muted">
+                        <small>Powered by <a href="https://github.com/gentoo/tyrian-theme" target="_blank">Tyrian Theme</a></small>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <p>
+                        <a href="{{base_url}}/about.html">About</a> |
+                        <a href="{{base_url}}/privacy.html">Privacy Policy</a> |
+                        <a href="{{base_url}}/contact.html">Contact</a>
+                    </p>
+                    <p class="text-muted">
+                        <small>Last updated: {{last_updated}}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{base_url}}/assets/jquery-3.6.slim.js"></script>
+    <script src="{{base_url}}/assets/popper.min.js"></script>
+    <script src="{{base_url}}/assets/bootstrap.min.js"></script>
+    <script src="{{base_url}}/assets/retina.min.js"></script>
+</body>
+</html>
