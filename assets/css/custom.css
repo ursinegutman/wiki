@@ -1,0 +1,181 @@
+/* Custom CSS for Static Wiki with Tyrian Theme */
+
+/* Body font */
+body {
+    font-family: 'Open Sans', 'Bitter', serif;
+}
+
+/* Fix for navbar collapse - Bootstrap 3 compatibility */
+@media (min-width: 768px) {
+    .navbar-collapse {
+        display: block !important;
+        height: auto !important;
+        padding-bottom: 0;
+        overflow: visible !important;
+    }
+
+    .navbar-collapse:before,
+    .navbar-collapse:after {
+        content: " ";
+        display: table;
+    }
+
+    .navbar-collapse:after {
+        clear: both;
+    }
+}
+
+/* Let Tyrian theme handle header styling */
+/* Only override content-specific styles */
+
+.firstHeading {
+    margin-top: 0;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#siteSub {
+    font-size: 0.85em;
+    color: #72777d;
+    margin-bottom: 1rem;
+}
+
+.mw-body-content {
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+/* Table of Contents */
+.wiki-toc {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.wiki-toc h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.wiki-toc ul {
+    padding-left: 1.5rem;
+}
+
+.wiki-toc li {
+    margin-bottom: 0.5rem;
+}
+
+/* Code blocks */
+pre {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+code {
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+}
+
+/* Wiki metadata */
+.wiki-meta {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background: linear-gradient(to bottom, #54487a 0%, #6a5a8f 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+/* List groups */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.5rem;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Footer */
+.footer {
+    background: #f5f5f5;
+    border-top: 1px solid #ddd;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+/* Gentoo Wiki Command Boxes */
+.cmd-box {
+    background-color: #000;
+    color: #fff;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    border-radius: 0.25rem;
+}
+
+.cmd-box > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.cmd-box code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    background: transparent;
+    padding: 0;
+}
+
+/* Gentoo Wiki Box Captions */
+.box-caption {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 0.25rem 0.25rem 0 0;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0;
+}
+
+.box-caption code {
+    background: transparent;
+    padding: 0;
+}
+
+.box-caption + pre {
+    border-radius: 0 0 0.25rem 0.25rem !important;
+    margin-top: 0 !important;
+}
+
+/* Gentoo Wiki Alert Boxes */
+.gw-box {
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
