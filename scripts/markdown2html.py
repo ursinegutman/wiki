@@ -15,6 +15,10 @@ import frontmatter
 import markdown
 from pystache import Renderer
 
+# Import custom Gentoo extension
+sys.path.insert(0, str(Path(__file__).parent))
+from gentoo_extension import GentooExtension
+
 
 class WikiBuilder:
     """Static site generator for wiki using Tyrian theme"""
@@ -48,7 +52,8 @@ class WikiBuilder:
                 'markdown.extensions.meta',
                 'markdown.extensions.admonition',
                 'markdown.extensions.tables',
-                'markdown.extensions.fenced_code'
+                'markdown.extensions.fenced_code',
+                GentooExtension()
             ],
             extension_configs={
                 'codehilite': {
