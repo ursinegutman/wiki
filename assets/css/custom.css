@@ -179,3 +179,24 @@ pre code {
     border-radius: 0.25rem;
     margin: 1rem 0;
 }
+
+/* Breadcrumb navigation in wiki-actions navbar */
+#gw-toolbar .nav navbar-nav {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#gw-toolbar .nav navbar-nav > li {
+    display: inline-block;
+}
+
+#gw-toolbar .nav navbar-nav > li:not(:last-child)::after {
+    content: ">";
+    margin: 0 0.5rem;
+    color: #999;
+}
+
+#gw-toolbar .nav navbar-nav > li.selected span {
+    color: #333;
+    font-weight: 500;
+}

@@ -87,7 +87,10 @@
                 </div>
                 <div class="collapse navbar-collapse navbar-form-container" id="gw-toolbar">
                     <ul class="nav navbar-nav">
-                        <li class="selected active"><a href="{{base_url}}/">{{title}}</a></li>
+                        {{#breadcrumb}}
+                        <li><a href="{{url}}">{{title}}</a></li>
+                        {{/breadcrumb}}
+                        <li class="selected active"><span>{{title}}</span></li>
                     </ul>
                     {{#show_search}}
                     <form action="https://www.google.com/search" id="searchform" class="navbar-form navbar-right" role="search">

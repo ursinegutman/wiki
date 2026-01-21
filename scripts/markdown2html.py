@@ -348,23 +348,57 @@ class WikiBuilder:
 
         return children
 
-    def get_breadcrumb(self, relative_path):
-        """Generate breadcrumb from file path
+    def get_breadcrumb(self, relative_path, metadata):
+        """Generate breadcrumb from file path with proper titles
 
         Args:
             relative_path: Relative path from content directory
+            metadata: Page metadata dict
 
         Returns:
-            list: List of breadcrumb items
+            list: List of breadcrumb items with titles and URLs
         """
-        parts = Path(relative_path).parts[:-1]  # Exclude filename
+        parts = list(Path(relative_path).parts[:-1])  # Exclude filename, convert to list
         breadcrumb = []
         base_url = self.config.get('base_url', '')
 
-        for i, part in enumerate(parts):
-            url = f'{base_url}/' + '/'.join(parts[:i+1]) + '/'
+        # Only add "Main Page" if we're not on the root README
+        if parts or Path(relative_path).name.lower() != 'readme.md':
             breadcrumb.append({
-                'title': part.replace('-', ' ').replace('_', ' ').title(),
+                'title': 'Main page',
+                'url': f'{base_url}/'
+            })
+        elif not parts:
+            # Root README - no breadcrumb needed
+            return []
+
+        # Build breadcrumb from folder structure
+        # Don't include the last folder if this is a README.md (it's the current page)
+        is_readme = Path(relative_path).name.lower() == 'readme.md'
+        num_parts = len(parts) - 1 if is_readme else len(parts)
+
+        for i in range(num_parts):
+            part = parts[i]
+
+            # Try to get title from README.md in that folder
+            folder_path = self.content_dir
+            for folder_part in parts[:i+1]:
+                folder_path = folder_path / folder_part
+
+            readme_file = folder_path / 'README.md'
+            if readme_file.exists():
+                try:
+                    folder_metadata, _ = self.extract_metadata(readme_file)
+                    title = folder_metadata.get('title', part.replace('-', ' ').replace('_', ' ').title())
+                except:
+                    title = part.replace('-', ' ').replace('_', ' ').title()
+            else:
+                title = part.replace('-', ' ').replace('_', ' ').title()
+
+            url = f'{base_url}/' + '/'.join(parts[:i+1]) + '/'
+
+            breadcrumb.append({
+                'title': title,
                 'url': url
             })
 
@@ -414,7 +448,7 @@ class WikiBuilder:
         layout = metadata.get('layout', 'wiki')
 
         # Generate breadcrumb
-        breadcrumb = self.get_breadcrumb(relative_path)
+        breadcrumb = self.get_breadcrumb(relative_path, metadata)
 
         # Add table of contents to content if enabled
         toc_value = metadata.get('toc', 'true')
