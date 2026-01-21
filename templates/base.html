@@ -126,7 +126,7 @@
         <div class="site-title">
             <div class="container">
                 <div class="row">
-                    <div class="site-title-buttons">
+                    <div class="site-title-buttons pull-right">
                         <div class="btn-group btn-group-sm">
                             <a href="{{base_url}}/" role="button" class="btn btn-primary">
                                 <span class="fa fa-home"></span> <strong>Home</strong>
@@ -160,14 +160,14 @@
         <div class="container">
             <div class="row">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-main-collapse">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <div class="collapse navbar-collapse navbar-main-collapse">
+                <div class="collapse navbar-collapse" id="navbar-main-collapse">
                     <ul class="nav navbar-nav">
                         <li><a href="{{base_url}}/" title="Visit the main page">Main page</a></li>
                         {{#categories}}
@@ -183,23 +183,22 @@
             </div>
         </div>
     </nav>
-    </header>
 
     <!-- Action Navigation -->
-    <nav class="navbar navbar-grey navbar-stick" role="navigation">
+    <nav class="navbar navbar-grey navbar-stick" id="wiki-actions" role="navigation">
         <div class="container">
             <div class="row">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#wiki-toolbar">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#gw-toolbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <div class="collapse navbar-collapse" id="wiki-toolbar">
+                <div class="collapse navbar-collapse" id="gw-toolbar">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="{{base_url}}/">{{title}}</a></li>
+                        <li class="selected active"><a href="{{base_url}}/">{{title}}</a></li>
                     </ul>
                     {{#show_search}}
                     <form action="https://www.google.com/search" id="searchform" class="navbar-form navbar-right" role="search">
@@ -207,7 +206,8 @@
                         <div class="input-group">
                             <input type="search" name="q" placeholder="Search {{site_name}}" class="form-control"/>
                             <div class="input-group-btn">
-                                <button type="submit" class="btn btn-default">Search</button>
+                                <button type="submit" name="go" value="Go" class="btn btn-default">Go</button>
+                                <button type="submit" name="fulltext" value="Search" class="btn btn-default">Search</button>
                             </div>
                         </div>
                     </form>
@@ -216,6 +216,7 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Main Content -->
     <div class="container">
